@@ -4,12 +4,17 @@ import SearchBar from "@/components/SearchBar";
 import Image from "next/image";
 import { fetchCars} from '@/utils';
 
-export default async function Home() {
+export default async function Home({searchParams}) {
 
-  const allCars = await fetchCars();
+  const allCars = await fetchCars({
+    manufacturer: searchParams.manufacturer || '',
+    year: searchParams.year || 2024,
+    fuel: searchParams.fuel || '',
+    limit: searchParams.limit || 10,
+    model: searchParams.model || '',
+  });
 
-  const isDataEmpty = !Array.isArray(allCars) || allCars.length < 1 
-  || !allCars;
+  const isDataEmpty = !Array.isArray(allCars) || allCars.length < 1 || !allCars;
 
   return (
    <main className="overflow-hidden">
@@ -32,14 +37,15 @@ export default async function Home() {
         </div>
 
         {
-          !isDataEmpty?(
+          !isDataEmpty ? (
             <section>
               <div className="home__cars-wrapper">
-                {allCars?.map((car) => 
+                {allCars?.map((car, index) => (
                 <CarCard 
+                key = {index}
                 car = {car}
                 />
-                )}
+              ))}
               </div>
             </section>
           ): (
